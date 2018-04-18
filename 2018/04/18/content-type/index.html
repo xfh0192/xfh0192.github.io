@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="#关于http请求中的Content-Type 写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的">
+<meta name="description" content="关于http请求中的Content-Type写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的时候">
 <meta name="keywords" content="http">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于http请求中的Content-Type">
 <meta property="og:url" content="http://yoursite.com/2018/04/18/content-type/index.html">
 <meta property="og:site_name" content="fh的记事本">
-<meta property="og:description" content="#关于http请求中的Content-Type 写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的">
+<meta property="og:description" content="关于http请求中的Content-Type写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的时候">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-18T15:42:31.000Z">
+<meta property="og:updated_time" content="2018-04-18T15:51:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于http请求中的Content-Type">
-<meta name="twitter:description" content="#关于http请求中的Content-Type 写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的">
+<meta name="twitter:description" content="关于http请求中的Content-Type写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。 先mark一些问题：  跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers  header中的content-type  和php后台对接的时候">
 
 
 
@@ -300,8 +300,7 @@
       
 
       
-        <p>#关于http请求中的Content-Type</p>
-<p>写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。</p>
+        <h1 id="关于http请求中的Content-Type"><a href="#关于http请求中的Content-Type" class="headerlink" title="关于http请求中的Content-Type"></a>关于http请求中的Content-Type</h1><p>写在前面：之前和后端对接的时候，被各种跨域还有header的问题坑来坑去，所以记得啥就写些啥了。先从简单的写吧。</p>
 <p>先mark一些问题：</p>
 <ol>
 <li><p>跨域，cors。加header（ Access-Control-Allow-Origin、Access-Control-Expose-Headers</p>
@@ -319,8 +318,7 @@
 <p>因此建议使用前，对参数调用encodeURIComponent，将空格都转成%20</p>
 <hr>
 <p>HTTP大家都不陌生，但是HTTP的许多细节，还是很复杂的。</p>
-<p>##写一个AJAX</p>
-<p>AJAX实现的核心就是利用XMLHttpRequest对象发送请求。</p>
+<h2 id="写一个AJAX"><a href="#写一个AJAX" class="headerlink" title="写一个AJAX"></a>写一个AJAX</h2><p>AJAX实现的核心就是利用XMLHttpRequest对象发送请求。</p>
 <p>首先，怎么用原生js写一个GET请求呢？</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&quot;GET&quot;, &quot;/api&quot;);</span><br><span class="line">xhr.send();</span><br></pre></td></tr></table></figure>
 <p>xhr.open 第一个参数是请求方法，第二个参数是请求url，然后send出去就可以了</p>
@@ -330,23 +328,19 @@
 <p>然后是POST请求。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&apos;POST&apos;, &apos;/api&apos;);</span><br><span class="line">xhr.send(&apos;id=5&amp;name=yin&apos;);	// 请求的数据是放在send里面的</span><br></pre></td></tr></table></figure>
 <p>post请求的话，数据就会在请求体中了。</p>
-<p>##看看请求的结果</p>
-<p>以上面的post请求为例。</p>
+<h2 id="看看请求的结果"><a href="#看看请求的结果" class="headerlink" title="看看请求的结果"></a>看看请求的结果</h2><p>以上面的post请求为例。</p>
 <p>我们会发现请求的mine类型为text/plain</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Request Headers:</span><br><span class="line">...</span><br><span class="line">Content-Type: text/plain;charset=UTF-8</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Request Payload:</span><br><span class="line">page=5&amp;pageSize=20</span><br></pre></td></tr></table></figure>
 <p>并且请求的参数，跟我们平常看到的不太一样。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 平常看到的payload</span><br><span class="line"></span><br><span class="line">src: web</span><br><span class="line">uid: 58b322a22f301e006c0f3060</span><br><span class="line">token: eyJhY2Nlc3NfdG9rZW4iOiJYVnJEMHFMRVZtWWdyOXJVIiwicmVmcmVzaF90b2tlbiI6InVSYmVwcnRURkJPY1dPOFciLCJ0b2tlbl90eXBlIjoibWFjIiwiZXhwaXJlX2luIjoyNTkyMDAwfQ==</span><br><span class="line">device_id: 1523980025803</span><br><span class="line">field: jobTitle</span><br><span class="line">value: 这个是value，截图不好使，就copy出来了</span><br></pre></td></tr></table></figure>
 <p>可以看到，平常的请求检查时，会按字段显示</p>
-<p>##设置content-type</p>
-<p>这是为什么呢？是因为我们没有设置它的Content-Type，如下：</p>
+<h2 id="设置content-type"><a href="#设置content-type" class="headerlink" title="设置content-type"></a>设置content-type</h2><p>这是为什么呢？是因为我们没有设置它的Content-Type，如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&quot;POST&quot;, &quot;/api&quot;);</span><br><span class="line">xhr.setRequestHeader(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;);</span><br><span class="line">xhr.send(&apos;id=5&amp;name=yin&apos;);</span><br></pre></td></tr></table></figure>
-<p>###x-www-form-urlencoded</p>
-<p>如果设施了content-type为x-www-form-urlencoded的话，检查时，chrome也会按字段分行展示：</p>
+<h3 id="x-www-form-urlencoded"><a href="#x-www-form-urlencoded" class="headerlink" title="x-www-form-urlencoded"></a>x-www-form-urlencoded</h3><p>如果设施了content-type为x-www-form-urlencoded的话，检查时，chrome也会按字段分行展示：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id: 5</span><br><span class="line">name: yin</span><br></pre></td></tr></table></figure>
 <p>它是一种最常用的请求编码格式，支持GET/POST方法，特点是：所有的数据变成键值对的形式，即key1=value1&amp;key2=value2，并且特殊字符需要转义。</p>
 <p>另外，假如send的是一个对象，结果会显示[object Object]。说明会自动调用toString，因此在send数据时，需要转换为字符串</p>
-<p>###application/json</p>
-<p>假如开发的时候，和后端约定好，数据是json格式。这个时候要求格式要变成json，就需要指定Content-Type为application/json，然后send的数据要stringify一下</p>
+<h3 id="application-json"><a href="#application-json" class="headerlink" title="application/json"></a>application/json</h3><p>假如开发的时候，和后端约定好，数据是json格式。这个时候要求格式要变成json，就需要指定Content-Type为application/json，然后send的数据要stringify一下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&quot;POST&quot;, &quot;/add&quot;);</span><br><span class="line">xhr.setRequestHeader(&quot;Content-type&quot;, &quot;application/json&quot;);</span><br><span class="line">let data = &#123;id:5, name: &quot;yin&quot;&#125;;</span><br><span class="line">xhr.send(JSON.stringify(data));</span><br></pre></td></tr></table></figure>
 <p>结果：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;id: 5, name: &quot;yin&quot;&#125;</span><br></pre></td></tr></table></figure>
@@ -359,8 +353,7 @@
 <li><p>所以相对来说，如果请求数据结构比较简单应该是使用常用的urlencoded比较有利，而比较复杂时使用json比较有利。通常来说比较常用的还是urlencoded.</p>
 </li>
 </ul>
-<p>###multipart/form-data</p>
-<p>还有这一种编码multipart/form-data。</p>
+<h3 id="multipart-form-data"><a href="#multipart-form-data" class="headerlink" title="multipart/form-data"></a>multipart/form-data</h3><p>还有这一种编码multipart/form-data。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let formData = new FormData();</span><br><span class="line">formData.append(&quot;id&quot;, 5); // 数字5会被立即转换成字符串 &quot;5&quot;</span><br><span class="line">formData.append(&quot;name&quot;, &quot;#yin&quot;);</span><br><span class="line">// formData.append(&quot;file&quot;, input.files[0]);</span><br><span class="line"></span><br><span class="line">let xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&quot;POST&quot;, &quot;/add&quot;);</span><br><span class="line">xhr.send(formData);</span><br></pre></td></tr></table></figure>
 <p>它通常用于上传文件，上传文件必须要使用这种格式。上面代码发送的内容如下所示</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryJ4wHSrmAWG3dNM98</span><br><span class="line">...</span><br><span class="line">payload:</span><br><span class="line">----WebKitFormBoundaryJ4wHSrmAWG3dNM98	// 字段和字段之间用一个随机字符串隔开（上传文件需要用这种形式</span><br><span class="line">Content-Disposition: form-data; name=&quot;id&quot;</span><br><span class="line"></span><br><span class="line">5</span><br><span class="line">----WebKitFormBoundaryJ4wHSrmAWG3dNM98</span><br><span class="line">Content-Disposition: form-data; name=&quot;name&quot;</span><br><span class="line"></span><br><span class="line">#yin 			// 内容就不需要转义了</span><br><span class="line">----WebKitFormBoundaryJ4wHSrmAWG3dNM98</span><br></pre></td></tr></table></figure>
@@ -462,8 +455,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -514,6 +516,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于http请求中的Content-Type"><span class="nav-number">1.</span> <span class="nav-text">关于http请求中的Content-Type</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#写一个AJAX"><span class="nav-number">1.1.</span> <span class="nav-text">写一个AJAX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#看看请求的结果"><span class="nav-number">1.2.</span> <span class="nav-text">看看请求的结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置content-type"><span class="nav-number">1.3.</span> <span class="nav-text">设置content-type</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#x-www-form-urlencoded"><span class="nav-number">1.3.1.</span> <span class="nav-text">x-www-form-urlencoded</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#application-json"><span class="nav-number">1.3.2.</span> <span class="nav-text">application/json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multipart-form-data"><span class="nav-number">1.3.3.</span> <span class="nav-text">multipart/form-data</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
