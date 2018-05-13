@@ -229,6 +229,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/13/关于将vue-cli改为多页面配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xfh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fh的记事本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/05/13/关于将vue-cli改为多页面配置/" itemprop="url">关于将vue-cli改为多页面配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-13T16:50:56+08:00">
+                2018-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="关于将vue-cli改为多页面配置"><a href="#关于将vue-cli改为多页面配置" class="headerlink" title="关于将vue-cli改为多页面配置"></a>关于将vue-cli改为多页面配置</h1><p>现在大家的前端项目，基本都用webpack了，不仅是css的autoprefixed补充前缀，就连js的新特性都可以用起来了，挺爽的。</p>
+<p>使用vue的话，当然也用上咯。但是自己搭一个脚手架实在是比较麻烦，所以还是用现成的会比较好，默认当然是有大佬维护的vue-cli咯。</p>
+<p>但是又有了一个问题，项目需要是多页面应用，但是vue-cli默认生成的配置却是单页面的。所以就只能自己去改配置了。</p>
+<blockquote>
+<p>以我当前做的项目为例子。目前用的 webpack–3.6.x</p>
+</blockquote>
+<h2 id="需要达到的打包结果"><a href="#需要达到的打包结果" class="headerlink" title="需要达到的打包结果"></a>需要达到的打包结果</h2><p>vue-cli的话，直接打包的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">	├── index.html</span><br><span class="line">	└── static</span><br><span class="line">		├── css</span><br><span class="line">		└── js</span><br></pre></td></tr></table></figure>
+<p>可以看到，打包出来是单页面的</p>
+<p>但是因为当前项目，需要分为mobile和pcmall两个目录，因此我需要的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-dist</span><br><span class="line">	├──mobile</span><br><span class="line">	│	└──index.html</span><br><span class="line">	├──pcmall</span><br><span class="line">	│	└──index.html</span><br><span class="line">	└──static</span><br><span class="line">		├── css</span><br><span class="line">		└── js</span><br><span class="line">			├── mobile-index.js</span><br><span class="line">			└── pcmall-index.js</span><br></pre></td></tr></table></figure>
+<p>可以看到，需要分为不同目录供pc和mobile端使用。</p>
+<p>js文件需要添加前缀区分对应的页面，否则名称一致将导致冲突。</p>
+<h2 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h2><p>首先放一下当前项目主要的文件目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">-build</span><br><span class="line">	|...</span><br><span class="line">	├── utils.js</span><br><span class="line">	├── webpack.base.conf.js</span><br><span class="line">	├── webpack.config.js</span><br><span class="line">	├── webpack.dev.conf.js</span><br><span class="line">	└── webpack.prod.conf.js</span><br><span class="line">-src</span><br><span class="line">	|...</span><br><span class="line">	├── mobile</span><br><span class="line">	|	└── pages</span><br><span class="line">	│       ├── index</span><br><span class="line">	│       │   ├── index.html</span><br><span class="line">	│       │   ├── index.js</span><br><span class="line">	│       │   └── index.vue</span><br><span class="line">	├── pcmall</span><br><span class="line">	|	└── pages</span><br><span class="line">	│       ├── index</span><br><span class="line">	│       │   ├── index.html</span><br><span class="line">	│       │   ├── index.js</span><br><span class="line">	│       │   └── index.vue</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+<p>可以看到，相比cli，build目录中增加了一个webpack.config.js文件。这是将webpack.base.conf.js中的entry项，单独提取出来并加以修改之后存放的地方。</p>
+<h2 id="开始改配置吧！"><a href="#开始改配置吧！" class="headerlink" title="开始改配置吧！"></a>开始改配置吧！</h2><p>首先我们看看cli的entry和output配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">## webpack.base.conf.js</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: &apos;./src/main.js&apos;</span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    path: config.build.assetsRoot,</span><br><span class="line">    filename: &apos;[name].js&apos;,</span><br><span class="line">    publicPath: process.env.NODE_ENV === &apos;production&apos;</span><br><span class="line">    ? config.build.assetsPublicPath</span><br><span class="line">    : config.dev.assetsPublicPath</span><br><span class="line">  &#125;,</span><br><span class="line">  </span><br><span class="line">  ...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>entry 只有一个文件，表示整个项目从 ./src/main.js 开始建立依赖树。</p>
+<p>output path表示打包到哪里，filename代表打包出来的文件名字，publicPath代表引用文件的位置。</p>
+<p>我们发现，output.filename 中使用了 [name]，表示将根据entry的key进行命名。</p>
+<p><strong>那么思路就简单了，增加entry就好</strong></p>
+<hr>
+<h3 id="webpack-config-js"><a href="#webpack-config-js" class="headerlink" title="webpack.config.js"></a>webpack.config.js</h3><p>1.</p>
+<p>我们在 build文件夹中增加webpack.config.js，然后将webpack.base.conf.js的entry改一改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">## webpack.base.conf.js</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">const webpackConfig = require(&apos;./webpack.config.js&apos;)</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">	entry: webpackConfig.entry,</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2.</p>
+<p>接下来，开始写entry配置</p>
+<blockquote>
+<p>这里去匹配文件路径的处理，使用了一个npm包 -&gt; <a href="https://www.npmjs.com/package/glob" target="_blank" rel="noopener">glob</a></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">## webpack.config.js</span><br><span class="line"></span><br><span class="line">const webpackConfig = &#123;</span><br><span class="line">    entry: &#123;&#125;,</span><br><span class="line">    plugins: []</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = webpackConfig;</span><br><span class="line"></span><br><span class="line">const path = require(&apos;path&apos;)</span><br><span class="line">const HtmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;)</span><br><span class="line">const webpack = require(&apos;webpack&apos;)</span><br><span class="line">const glob = require(&apos;glob&apos;)</span><br><span class="line">const utils = require(&apos;./utils&apos;)</span><br><span class="line"></span><br><span class="line">const isProduction = process.env.NODE_ENV === &apos;production&apos;</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">/*</span><br><span class="line">	获取指定路径下的入口文件</span><br><span class="line">	</span><br><span class="line">	根据目录结构，参数为 src/**/pages/**/*.js</span><br><span class="line">	</span><br><span class="line">	@return entries[Object]</span><br><span class="line">	@example entries = &#123;</span><br><span class="line">		mobile/index : &apos;src/mobile/pages/index/index.js&apos;,</span><br><span class="line">		pcmall/index : &apos;src/pcmall/pages/index/index.js&apos;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">*/</span><br><span class="line">const getEntries = function (globPath) &#123;</span><br><span class="line">    let files = glob.sync(globPath)</span><br><span class="line">    let entries = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    files.forEach(function (filePath) &#123;</span><br><span class="line">        let split = filePath.split(&apos;/&apos;)</span><br><span class="line">        let directory = split[split.length - 4];</span><br><span class="line">        let name = split[split.length - 2]</span><br><span class="line"></span><br><span class="line">       entries[directory + &apos;/&apos; + name] = &apos;./&apos; + filePath;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    return entries;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let entries = getEntries(&apos;src/**/pages/**/*.js&apos;);</span><br><span class="line"></span><br><span class="line">Object.keys(entries).forEach(function (name) &#123;</span><br><span class="line">	webpackConfig.entry[name.replace(&apos;/&apos;, &apos;-&apos;)] = entries[name];</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这样，就可以按照’src/**/pages/**/*.js’这样的约束，将每个页面的entry自动打包了。</p>
+<p>但是有个问题，打包一下，诶？我们会发现打包出来的html对不上，还是旧的</p>
+<p>3.</p>
+<p>这是当然的，cli中的打包，本来就只是打包js，需要打包html还得用插件<a href="https://www.npmjs.com/package/html-webpack-plugin" target="_blank" rel="noopener">html-webpack-plugin</a></p>
+<p>我们可以看看webpack.prod.conf.js，看看这个插件怎么用的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">## webpack.prod.conf.js</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"> new HtmlWebpackPlugin(&#123;</span><br><span class="line">      filename: config.build.index,</span><br><span class="line">      template: &apos;index.html&apos;,</span><br><span class="line">      inject: true,</span><br><span class="line">      chunks: [&apos;first&apos;, &apos;vendor&apos;, &apos;manifest&apos;, &apos;common&apos;],</span><br><span class="line">      minify: &#123;</span><br><span class="line">        removeComments: true,</span><br><span class="line">        collapseWhitespace: true,</span><br><span class="line">        removeAttributeQuotes: true</span><br><span class="line">	   &#125;,</span><br><span class="line">      chunksSortMode: &apos;dependency&apos;</span><br><span class="line">&#125;),</span><br></pre></td></tr></table></figure>
+<p>其实挺简单的，跟output的配置差不多，主要就是配好filename和template</p>
+<p>那么我们首先将上面webpack.prod.conf.js的代码注释一下。</p>
+<p>我们调用html-webpack-plugin的地方，是webpack.config.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">## webpack.config.js</span><br><span class="line"></span><br><span class="line">const webpackConfig = &#123;</span><br><span class="line">    entry: &#123;&#125;,</span><br><span class="line">    plugins: []</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = webpackConfig;</span><br><span class="line"></span><br><span class="line">const path = require(&apos;path&apos;)</span><br><span class="line">const HtmlWebpackPlugin = require(&apos;html-webpack-plugin&apos;)</span><br><span class="line">const webpack = require(&apos;webpack&apos;)</span><br><span class="line">const glob = require(&apos;glob&apos;)</span><br><span class="line">const utils = require(&apos;./utils&apos;)</span><br><span class="line"></span><br><span class="line">const isProduction = process.env.NODE_ENV === &apos;production&apos;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">	获取指定路径下的入口文件</span><br><span class="line">	</span><br><span class="line">	根据目录结构，参数为 src/**/pages/**/*.js</span><br><span class="line">	</span><br><span class="line">	@return entries[Object]</span><br><span class="line">	@example entries = &#123;</span><br><span class="line">		mobile/index : &apos;src/mobile/pages/index/index.js&apos;,</span><br><span class="line">		pcmall/index : &apos;src/pcmall/pages/index/index.js&apos;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">*/</span><br><span class="line">const getEntries = function (globPath) &#123;</span><br><span class="line">    let files = glob.sync(globPath)</span><br><span class="line">    let entries = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    files.forEach(function (filePath) &#123;</span><br><span class="line">        let split = filePath.split(&apos;/&apos;)</span><br><span class="line">        let directory = split[split.length - 4];</span><br><span class="line">        let name = split[split.length - 2]</span><br><span class="line"></span><br><span class="line">       entries[directory + &apos;/&apos; + name] = &apos;./&apos; + filePath;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    return entries;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let entries = getEntries(&apos;src/**/pages/**/*.js&apos;);</span><br><span class="line"></span><br><span class="line">Object.keys(entries).forEach(function (name) &#123;</span><br><span class="line">    </span><br><span class="line">    let fileName = name.split(&apos;/&apos;)[1];</span><br><span class="line">    let srcPath = entries[name]</span><br><span class="line">    let isPcmall = name.split(&apos;/&apos;)[0];</span><br><span class="line"></span><br><span class="line">    let targetPath = process.env.NODE_ENV === &apos;production&apos;</span><br><span class="line">        ? utils.assetsHtmlPath(`/$&#123;isPcmall&#125;/$&#123;fileName&#125;.html`)</span><br><span class="line">        : `$&#123;isPcmall&#125;/$&#123;fileName&#125;.html`</span><br><span class="line">        </span><br><span class="line">    let templatePath = path.join(__dirname, `../src/$&#123;isPcmall&#125;/pages/$&#123;fileName&#125;/$&#123;fileName&#125;.html`)</span><br><span class="line"></span><br><span class="line">    webpackConfig.entry[name.replace(&apos;/&apos;, &apos;-&apos;)] = srcPath</span><br><span class="line"></span><br><span class="line">    // 每个页面生成一个html</span><br><span class="line">    let plugin = new HtmlWebpackPlugin(&#123;</span><br><span class="line">        // 生成出来的文件名</span><br><span class="line">        filename: targetPath,</span><br><span class="line"></span><br><span class="line">        // 每个html的模板</span><br><span class="line">        template: templatePath,</span><br><span class="line"></span><br><span class="line">        // 自动将引用插入html</span><br><span class="line">        inject: true,</span><br><span class="line"></span><br><span class="line">        // 每个html引用的js模块，也可以在这里加上vendor等公共模块</span><br><span class="line">        chunks: [&apos;manifest&apos;, &apos;vendor&apos;, &apos;common&apos;, &apos;app&apos;, name.replace(&apos;/&apos;, &apos;-&apos;)],</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    webpackConfig.plugins.push(plugin);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>以上就是完整的webpack.config.js</p>
+<p>当做完上述修改后，就达成了我们想要的打包效果了。</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 多页面修改</li>
+<li>[] 代码优化</li>
+</ul>
+<p>欢迎批评指正。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/18/content-type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1413,7 +1581,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1426,7 +1594,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
