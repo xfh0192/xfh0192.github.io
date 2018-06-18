@@ -229,6 +229,146 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/16/写个用于上传的shell脚本吧/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xfh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fh的记事本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/16/写个用于上传的shell脚本吧/" itemprop="url">写个用于上传的shell脚本吧</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-16T20:20:13+08:00">
+                2018-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="写个用于上传的shell脚本吧"><a href="#写个用于上传的shell脚本吧" class="headerlink" title="写个用于上传的shell脚本吧"></a>写个用于上传的shell脚本吧</h1><p>最近困扰于通过ftp上传代码到测服时，总是需要手动操作。于是摸索了一下，可以借助node写一点脚本，帮助我快速实现上传的操作。</p>
+<p>具体来说，用到了node的包：<a href="https://www.npmjs.com/package/ssh2" target="_blank" rel="noopener">ssh2</a></p>
+<h2 id="需求效果"><a href="#需求效果" class="headerlink" title="需求效果"></a>需求效果</h2><p>大致上是将dist文件夹上传到远程服务器上面。文件夹目录如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">dist</span><br><span class="line">├── mobile</span><br><span class="line">│   ├── article-list.html</span><br><span class="line">│   ├── index.html</span><br><span class="line">├── pcmall</span><br><span class="line">│   ├── forTest.html</span><br><span class="line">│   └── index.html</span><br><span class="line">└── static</span><br><span class="line">    ├── css</span><br><span class="line">    │   ├── mobile-article-list.css</span><br><span class="line">    │   ├── mobile-index.css</span><br><span class="line">    ├── img</span><br><span class="line">    │   ├── appreciate-people.859a832.png</span><br><span class="line">    │   ├── banner1.0f75289.png</span><br><span class="line">    │   ├── banner2.4a37379.png</span><br><span class="line">    └── js</span><br><span class="line">        ├── babel-polyfill.c168bb080d720539793a.js</span><br><span class="line">        ├── manifest.f8d9173cdd53ce0c820b.js</span><br><span class="line">        └── vendor.ad87910d1acc0e175314.js</span><br></pre></td></tr></table></figure>
+<p>我们通过使用ssh的sftp实现。</p>
+<p>利用 <a href="https://github.com/mscdex/ssh2-streams/blob/master/SFTPStream.md" target="_blank" rel="noopener">fastPut</a> 方法</p>
+<h2 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h2><ol>
+<li>首先可以写一些简单的方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"># ssh-base-class.js</span><br><span class="line"></span><br><span class="line">// https://github.com/mscdex/ssh2#user-content-client-methods</span><br><span class="line"></span><br><span class="line">let Client = require(&apos;ssh2&apos;).Client;</span><br><span class="line"></span><br><span class="line">class sshBaseClass &#123;</span><br><span class="line">	</span><br><span class="line">    constructor() &#123;</span><br><span class="line">    	// 实例化一个客户端对象</span><br><span class="line">        this.client = new Client();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	// 创建一个ssh连接</span><br><span class="line">    connect(config) &#123;</span><br><span class="line">        config = config || &#123;&#125;;</span><br><span class="line"></span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            this.client.on(&apos;ready&apos;, () =&gt; &#123;</span><br><span class="line">                console.log(&apos;connect ready&apos;);</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            .on(&apos;error&apos;, (err) =&gt; &#123;</span><br><span class="line">                console.log(&apos;connect error&apos;);</span><br><span class="line">            &#125;)</span><br><span class="line">            .on(&apos;end&apos;, (err) =&gt; &#123;</span><br><span class="line">                console.log(&apos;connect end&apos;);</span><br><span class="line">            &#125;)</span><br><span class="line">            .on(&apos;close&apos;, (err) =&gt; &#123;</span><br><span class="line">                console.log(&apos;connect close&apos;);</span><br><span class="line">            &#125;)</span><br><span class="line">            .connect(config);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	// 断开连接</span><br><span class="line">    end() &#123;</span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            resolve(this.client.end());</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = sshBaseClass;</span><br></pre></td></tr></table></figure>
+<p>2、然后封装一些简单的方法</p>
+<p>utils.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># utils.js</span><br><span class="line"></span><br><span class="line">let glob = require(&apos;glob&apos;);</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">    getFiles: (pattern) =&gt; &#123;</span><br><span class="line">        if (!pattern) return [];</span><br><span class="line">        </span><br><span class="line">        let files = glob.sync(pattern, &#123;</span><br><span class="line">            nodir: true,</span><br><span class="line">        &#125;);</span><br><span class="line">        return files;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sftp.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">let fs = require(&apos;fs&apos;);</span><br><span class="line"></span><br><span class="line">let utils = require(&apos;./utils&apos;);</span><br><span class="line">let sshBaseClass = require(&apos;./ssh-base-class&apos;);</span><br><span class="line"></span><br><span class="line">module.exports = class SftpClient extends sshBaseClass&#123;</span><br><span class="line"></span><br><span class="line">    constructor() &#123;</span><br><span class="line">        super();</span><br><span class="line">        </span><br><span class="line">        // client.sftp() 会返回一个sftp会话，将该会话保存在此处</span><br><span class="line">        this.sftp = null;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 连接sftp (override了)</span><br><span class="line">    connect(config) &#123;</span><br><span class="line">        config = config || &#123;&#125;;</span><br><span class="line"></span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            this.client.on(&apos;ready&apos;, () =&gt; &#123;</span><br><span class="line">                console.log(&apos;sftp connection ready&apos;);</span><br><span class="line">                </span><br><span class="line">                this.client.sftp((err, sftp) =&gt; &#123;</span><br><span class="line">                    if (err) &#123;</span><br><span class="line">                        reject(err);</span><br><span class="line">                    &#125;</span><br><span class="line">                    this.sftp = sftp;</span><br><span class="line">                    resolve(sftp);</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;)</span><br><span class="line">            .on(&apos;error&apos;, (err) =&gt; &#123;</span><br><span class="line">                consolel.log(&apos;sftp connection error event&apos;);</span><br><span class="line">                reject(err);</span><br><span class="line">            &#125;)</span><br><span class="line">            .connect(config);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 获取配置项</span><br><span class="line">    getOptions(customOptions) &#123;</span><br><span class="line">        let options = Object.assign(&#123;&#125;, &#123;encoding: &apos;utf8&apos;&#125;, customOptions);</span><br><span class="line">        return options;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 上传指定路径的指定文件。单个</span><br><span class="line">    put(localPath, remotePath, customOptions) &#123;</span><br><span class="line">        let options = this.getOptions(customOptions || &#123;&#125;);</span><br><span class="line"></span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            let sftp = this.sftp;</span><br><span class="line"></span><br><span class="line">            if (sftp) &#123;</span><br><span class="line"></span><br><span class="line">                sftp.fastPut(localPath, remotePath, options, (err) =&gt; &#123;</span><br><span class="line">                    if (err) &#123;</span><br><span class="line">                        reject(err);</span><br><span class="line">                        return false;</span><br><span class="line">                    &#125;</span><br><span class="line">                    resolve();</span><br><span class="line">                    return false;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 在远程服务器，创建文件夹</span><br><span class="line">    // @params &#123;string&#125; path: 远程中，需要创建的文件夹路径</span><br><span class="line">    // @params &#123;boolean&#125; recursive: 是否需要遍历目录深层</span><br><span class="line">    mkdir(path, recursive) &#123;</span><br><span class="line">        </span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            let sftp = this.sftp;</span><br><span class="line">            </span><br><span class="line">            if (sftp) &#123;</span><br><span class="line"></span><br><span class="line">                if (!recursive) &#123;</span><br><span class="line">                    sftp.mkdir(path, (err) =&gt; &#123;</span><br><span class="line">                        if (err) &#123;</span><br><span class="line">                            // console.log(err);</span><br><span class="line">                            reject(err);</span><br><span class="line">                            return false;</span><br><span class="line">                        &#125;</span><br><span class="line">                        resolve();</span><br><span class="line">                    &#125;)</span><br><span class="line">                    return false;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                let tokens = path.split(/\//g);</span><br><span class="line">                let p = &apos;&apos;;</span><br><span class="line"></span><br><span class="line">                let mkdir = () =&gt; &#123;</span><br><span class="line">                    let token = tokens.shift();</span><br><span class="line"></span><br><span class="line">                    if (!token &amp;&amp; !tokens.length) &#123;</span><br><span class="line">                        resolve();</span><br><span class="line">                        return false;</span><br><span class="line">                    &#125;</span><br><span class="line">                    token += &apos;/&apos;;</span><br><span class="line">                    p = p + token;</span><br><span class="line">                    sftp.mkdir(p, (err) =&gt; &#123;</span><br><span class="line">                        if (err &amp;&amp; err.code !== 4) &#123;</span><br><span class="line">                            reject(err);</span><br><span class="line">                        &#125;</span><br><span class="line">                        mkdir();</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;</span><br><span class="line">                return mkdir();</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                reject(Error(&apos;sftp mkdir error&apos;));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 上传文件整个文件夹。遍历并创建中间目录</span><br><span class="line">    // item &#123;string&#125; item: 目标文件夹中的文件路径，如：mobile/index.html</span><br><span class="line">    // localDir &#123;string&#125; localDir: 本地目标文件夹，如： path.resolve(&apos;dist&apos;) + &apos;/&apos;</span><br><span class="line">    // remoteDir &#123;string&#125; remoteDir: </span><br><span class="line">    putDir(item, localDir, remoteDir) &#123;</span><br><span class="line">        return new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            let sftp = this.sftp;</span><br><span class="line">            let tokens = item.split(&apos;/&apos;);</span><br><span class="line">            tokens.pop();</span><br><span class="line">            let p = tokens.join(&apos;/&apos;);</span><br><span class="line"></span><br><span class="line">            if (sftp) &#123;</span><br><span class="line">                return this.mkdir(remoteDir + p, true)</span><br><span class="line">                        .then(() =&gt; &#123;</span><br><span class="line">                            resolve(this.put(localDir + item, remoteDir + item));</span><br><span class="line">                        &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3、然后考虑到需要遍历文件夹内的上传文件，所以要保证执行顺序：</p>
+<p>promise-executor.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">// https://www.jianshu.com/p/f4eb7432feb2</span><br><span class="line"></span><br><span class="line">// 利用promise队列，使一连串promise的执行lazy化，有效控制顺序</span><br><span class="line">class PromiseExecutor &#123;</span><br><span class="line">    constructor(queue) &#123;</span><br><span class="line">        // lazy promise 队列</span><br><span class="line">        this._queue = [];</span><br><span class="line"></span><br><span class="line">        // 一个变量锁。当前有promise执行，就等待</span><br><span class="line">        this._isBusy = false;</span><br><span class="line"></span><br><span class="line">        // 回调函数</span><br><span class="line">        this._callback = null;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    each(callback) &#123;</span><br><span class="line">        this._callback = callback;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    add(lazyPromise) &#123;</span><br><span class="line">        if (!lazyPromise) &#123;</span><br><span class="line">            // lazyPromise = Promise.resolve();</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        this._queue.push(lazyPromise);</span><br><span class="line"></span><br><span class="line">        if (this._isBusy) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        this._isBusy = true;</span><br><span class="line"></span><br><span class="line">        return this.execute();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    async execute() &#123;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            // 按队列任务顺序依次执行</span><br><span class="line">            while(this._queue.length &gt; 0) &#123;</span><br><span class="line">                const head = this._queue.shift();</span><br><span class="line">                const value = await head;</span><br><span class="line">                this._callback &amp;&amp; this._callback(value);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // 执行完之后，解锁</span><br><span class="line">            this._isBusy = false;</span><br><span class="line">            return Promise.resolve();</span><br><span class="line">        &#125; catch(e) &#123;</span><br><span class="line">            console.log(e);</span><br><span class="line">            return Promise.reject(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = PromiseExecutor;</span><br></pre></td></tr></table></figure>
+<p>4、 好的，最后就是实际调用了</p>
+<p>将build之后的 <strong>dist/static</strong> 文件夹上传。</p>
+<p>test.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">let path = require(&apos;path&apos;);</span><br><span class="line">let fs = require(&apos;fs&apos;);</span><br><span class="line"></span><br><span class="line">let FstpClient = require(&apos;./utils/sftp&apos;);</span><br><span class="line">let utils = require(&apos;./utils/utils&apos;);</span><br><span class="line">let PromiseExecutor = require(&apos;./utils/promise-executor&apos;);</span><br><span class="line"></span><br><span class="line">let client = new FstpClient();</span><br><span class="line">let promiseExec = new PromiseExecutor();</span><br><span class="line"></span><br><span class="line">client.connect(&#123;</span><br><span class="line">    host: &apos;xxxxxxx&apos;,</span><br><span class="line">    port: 22,</span><br><span class="line">    username: &apos;xxxxxxx&apos;,</span><br><span class="line">    password: &apos;xxxxxxxxxx&apos;</span><br><span class="line">&#125;)</span><br><span class="line">.then(() =&gt; &#123;</span><br><span class="line">    let localDir = path.resolve(&apos;dist&apos;) + &apos;/&apos;;</span><br><span class="line">    let files = utils.getFiles(localDir + &apos;**&apos;);</span><br><span class="line">    let targetDir = &apos;/media/test/&apos;;</span><br><span class="line"></span><br><span class="line">    for (let i = 0, len = files.length; i &lt; len; i++) &#123;</span><br><span class="line">        let promise = null;</span><br><span class="line"></span><br><span class="line">        let item = files[i];</span><br><span class="line">        let fileName = item.split(localDir)[1];</span><br><span class="line">        promise = new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">            resolve(client.putDir(fileName, localDir, targetDir));</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        promiseExec.add(promise);</span><br><span class="line">    &#125;</span><br><span class="line">    return promiseExec.execute();</span><br><span class="line">&#125;)</span><br><span class="line">.then((data) =&gt; &#123;</span><br><span class="line">    console.log(&apos;finish&apos;);</span><br><span class="line">    client.end();</span><br><span class="line">&#125;)</span><br><span class="line">.catch(err =&gt; &#123;</span><br><span class="line">    console.log(&apos;err&apos;)</span><br><span class="line">    client.end();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/13/关于将vue-cli改为多页面配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1581,7 +1721,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1594,7 +1734,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
