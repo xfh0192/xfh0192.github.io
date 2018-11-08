@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014100801.jpg">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2018/3/25/1625bc965301b755?imageslim">
-<meta property="og:updated_time" content="2018-11-05T02:59:31.000Z">
+<meta property="og:updated_time" content="2018-11-08T06:00:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于事件循环、task">
 <meta name="twitter:description" content="关于事件循环、task事件循环首先，JS是单线程的，是基于事件循环的。 1. 为什么JavaScript是单线程？JavaScript语言的一大特点就是单线程，也就是说，同一个时间只能做一件事 作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。这决定了它只能是单线程，否则会带来很复杂的同步问题。比如，假定JavaScript同时有两个线程，一个线程在某个DOM节点上添">
@@ -367,18 +367,22 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">script start</span><br><span class="line"></span><br><span class="line">script end</span><br><span class="line"></span><br><span class="line">promise1</span><br><span class="line"></span><br><span class="line">promise2</span><br><span class="line"></span><br><span class="line">setTimeout</span><br></pre></td></tr></table></figure>
 <p>但是因为不同浏览器的不同版本的支持情况不尽相同，具体顺序会有点差别。</p>
 <p>注意：引用文章写于2015年，列举的浏览器版本为firefox 40的阶段（现在最新版本为62），原文提到的火狐浏览器怪异问题，目前测试是不存在了。故原因一段不翻译，感兴趣可以自行阅读。</p>
-<h3 id="关于microtask的行为"><a href="#关于microtask的行为" class="headerlink" title="关于microtask的行为"></a>关于microtask的行为</h3><ul>
-<li>microtask 会令某段代码成为异步任务，而且该任务会在下一个task执行前执行。</li>
-<li>在回调函数执行后，只要没有其他js代码执行中（可理解为栈中没有执行环境），而且每个macrotask执行完毕，microtask的队列就会执行</li>
-<li>在执行microtask的过程中，如果又添加了新的microtask，该microtask将会添加到当前microtask queue的最后并且会执行</li>
+<h3 id="关于microtask的行为"><a href="#关于microtask的行为" class="headerlink" title="关于microtask的行为"></a>关于microtask的行为</h3><ol>
+<li>microtask 会令某段代码成为异步任务，而且该任务会在下一个task（即macrotask）执行前执行。</li>
+<li>满足任一条件时，microtask的队列就会执行：<ul>
+<li>在回调函数（注意是回调函数不是task，只要是挂载在事件上的回调函数就可以）执行后，只要没有主线程中没有执行中的js代码（可理解为栈中没有执行环境）</li>
+<li>每当有一个macrotask执行完毕</li>
 </ul>
+</li>
+<li>在执行microtask的过程中，如果又添加了新的microtask，该microtask将会添加到当前microtask queue的最后并且会执行</li>
+</ol>
 <blockquote>
 <p>promise也是遵循这个规则的。</p>
 </blockquote>
 <h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><ol>
 <li>task（macrotask）的执行是有顺序的，而且浏览器有可能会在两个任务执行之间进行渲染</li>
-<li>microtask的执行也是有顺序的。只要同时满足就会执行：<ul>
-<li>在每个回调函数执行后，只要没有其他js代码执行中（可理解为栈中没有执行环境）</li>
+<li>microtask的执行也是有顺序的。只要满足任一条件就会执行microtask队列：<ul>
+<li>在每个回调函数（注意是回调函数不是task，只要是挂载在事件上的回调函数就可以）执行后，只要没有其他js代码执行中（可理解为栈中没有执行环境）</li>
 <li>在每个macrotask结束时</li>
 </ul>
 </li>
@@ -386,10 +390,24 @@
 <blockquote>
 <p>refer2 中，有更复杂的例子，可以学习</p>
 </blockquote>
+<hr>
+<p>20181108分享后：</p>
+<ol>
+<li>重新分析示例，结论表述调整</li>
+<li>补充以下例子：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">// 添加三个 Task</span><br><span class="line">// Task 1</span><br><span class="line">setTimeout(function() &#123;</span><br><span class="line">  console.log(4);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">// Task 2</span><br><span class="line">setTimeout(function() &#123;</span><br><span class="line">  console.log(6);</span><br><span class="line">  // 添加 microTask</span><br><span class="line">  promise.then(function() &#123;</span><br><span class="line">    console.log(8);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">// Task 3</span><br><span class="line">setTimeout(function() &#123;</span><br><span class="line">  console.log(7);</span><br><span class="line">&#125;, 0);</span><br><span class="line"></span><br><span class="line">var promise = new Promise(function executor(resolve) &#123;</span><br><span class="line">  console.log(1);</span><br><span class="line">  for (var i = 0; i &lt; 10000; i++) &#123;</span><br><span class="line">    i == 9999 &amp;&amp; resolve();</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(2);</span><br><span class="line">&#125;).then(function() &#123;</span><br><span class="line">  console.log(5);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(3);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>执行结果：1 2 3 5 4 6 8 7</p>
+</blockquote>
+<p>至此，算是比较完整理解了event loop和task了。</p>
+<hr>
+<p>todo：总结node中的event loop和相关api</p>
 <p>refer：</p>
 <ol>
 <li><a href="http://www.ruanyifeng.com/blog/2014/10/event-loop.html" target="_blank" rel="noopener">JavaScript 运行机制详解：再谈Event Loop</a></li>
 <li><a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">Tasks, microtasks, queues and schedules</a></li>
+<li><a href="https://juejin.im/post/5baf37835188255c6c624d38" target="_blank" rel="noopener">https://juejin.im/post/5baf37835188255c6c624d38</a></li>
 </ol>
 
       
