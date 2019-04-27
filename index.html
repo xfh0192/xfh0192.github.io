@@ -229,6 +229,379 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/28/记一些常用的linux命令/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xfh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fh的记事本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/28/记一些常用的linux命令/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-28T06:40:57+08:00">
+                2019-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="lsof"><a href="#lsof" class="headerlink" title="lsof"></a>lsof</h2><p>通过lsof工具能够查看应用程序打开文件的描述符列表。</p>
+<ul>
+<li>在linux环境下，++任何事物都以文件的形式存在++，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。所以如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个++文件描述符++，无论这个文件的本质如何，该文件描述符为应用程序与基础操作系统之间的交互提供了通用接口。</li>
+<li>因为应用程序打开文件的描述符列表提供了大量关于这个应用程序本身的信息，因此通过lsof工具能够查看这个列表对系统监测以及排错将是很有帮助的。</li>
+</ul>
+<p>语法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof [options]</span><br></pre></td></tr></table></figure></p>
+<p>选项：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-a：列出打开文件存在的进程；</span><br><span class="line">-c&lt;进程名&gt;：列出指定进程所打开的文件；</span><br><span class="line">-g：列出GID号进程详情；</span><br><span class="line">-d&lt;文件号&gt;：列出占用该文件号的进程；</span><br><span class="line">+d&lt;目录&gt;：列出目录下被打开的文件；</span><br><span class="line">+D&lt;目录&gt;：递归列出目录下被打开的文件；</span><br><span class="line">-n&lt;目录&gt;：列出使用NFS的文件；</span><br><span class="line">-i&lt;条件&gt;：列出符合条件的进程。（4、6、协议、:端口、 @ip ）</span><br><span class="line">-p&lt;进程号&gt;：列出指定进程号所打开的文件；</span><br><span class="line">-u：列出UID号进程详情；</span><br><span class="line">-h：显示帮助信息；</span><br><span class="line">-v：显示版本信息。</span><br></pre></td></tr></table></figure></p>
+<p>例如：</p>
+<blockquote>
+<p>lsof -i:<port></port></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># lsof -i:8000</span><br><span class="line">COMMAND   PID USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME</span><br><span class="line">lwfs    22065 root    6u  IPv4 4395053      0t0  TCP *:irdmi (LISTEN)</span><br></pre></td></tr></table></figure>
+<p>输出column含义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lsof输出各列信息的意义如下：</span><br><span class="line"></span><br><span class="line">COMMAND：进程的名称</span><br><span class="line">PID：进程标识符</span><br><span class="line">PPID：父进程标识符（需要指定-R参数）</span><br><span class="line">USER：进程所有者</span><br><span class="line">PGID：进程所属组</span><br><span class="line">FD：文件描述符，应用程序通过文件描述符识别该文件。</span><br></pre></td></tr></table></figure></p>
+<p>文件描述符列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">cwd：表示current work dirctory，即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改</span><br><span class="line">txt：该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的 /sbin/init 程序</span><br><span class="line">lnn：library references (AIX);</span><br><span class="line">er：FD information error (see NAME column);</span><br><span class="line">jld：jail directory (FreeBSD);</span><br><span class="line">ltx：shared library text (code and data);</span><br><span class="line">mxx ：hex memory-mapped type number xx.</span><br><span class="line">m86：DOS Merge mapped file;</span><br><span class="line">mem：memory-mapped file;</span><br><span class="line">mmap：memory-mapped device;</span><br><span class="line">pd：parent directory;</span><br><span class="line">rtd：root directory;</span><br><span class="line">tr：kernel trace file (OpenBSD);</span><br><span class="line">v86  VP/ix mapped file;</span><br><span class="line">0：表示标准输出</span><br><span class="line">1：表示标准输入</span><br><span class="line">2：表示标准错误</span><br></pre></td></tr></table></figure></p>
+<p>文件类型：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">文件类型：</span><br><span class="line"></span><br><span class="line">DIR：表示目录。</span><br><span class="line">CHR：表示字符类型。</span><br><span class="line">BLK：块设备类型。</span><br><span class="line">UNIX： UNIX 域套接字。</span><br><span class="line">FIFO：先进先出 (FIFO) 队列。</span><br><span class="line">IPv4：网际协议 (IP) 套接字。</span><br><span class="line">DEVICE：指定磁盘的名称</span><br><span class="line">SIZE：文件的大小</span><br><span class="line">NODE：索引节点（文件在磁盘上的标识）</span><br><span class="line">NAME：打开文件的确切名称</span><br></pre></td></tr></table></figure></p>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h2><p>ps命令用于报告当前系统的进程状态。</p>
+<p>ps命令用于报告当前系统的进程状态。可以搭配kill指令随时中断、删除不必要的程序。ps命令是最基本同时也是非常强大的进程查看命令，使用该命令可以确定有哪些进程正在运行和运行的状态、进程是否结束、进程有没有僵死、哪些进程占用了过多的资源等等，总之大部分信息都是可以通过执行该命令得到的。</p>
+<p>语法：</p>
+<blockquote>
+<p>ps [options]</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">常用</span><br><span class="line">ps aux | grep [进程名称]</span><br><span class="line"></span><br><span class="line">1.查进程</span><br><span class="line">    ps命令查找与进程相关的PID号：</span><br><span class="line">    ps a 显示现行终端机下的所有程序，包括其他用户的程序。</span><br><span class="line">    ps -A 显示所有程序。</span><br><span class="line">    ps c 列出程序时，显示每个程序真正的指令名称，而不包含路径，参数或常驻服务的标示。</span><br><span class="line">    ps -e 此参数的效果和指定&quot;A&quot;参数相同。</span><br><span class="line">    ps e 列出程序时，显示每个程序所使用的环境变量。</span><br><span class="line">    ps f 用ASCII字符显示树状结构，表达程序间的相互关系。</span><br><span class="line">    ps -H 显示树状结构，表示程序间的相互关系。</span><br><span class="line">    ps -N 显示所有的程序，除了执行ps指令终端机下的程序之外。</span><br><span class="line">    ps s 采用程序信号的格式显示程序状况。</span><br><span class="line">    ps S 列出程序时，包括已中断的子程序资料。</span><br><span class="line">    ps -t&lt;终端机编号&gt; 指定终端机编号，并列出属于该终端机的程序的状况。</span><br><span class="line">    ps u 以用户为主的格式来显示程序状况。</span><br><span class="line">    ps x 显示所有程序，不以终端机来区分。</span><br><span class="line">   </span><br><span class="line">    最常用的方法是ps aux,然后再通过管道使用grep命令过滤查找特定的进程,然后再对特定的进程进行操作。</span><br><span class="line">    ps aux | grep program_filter_word,ps -ef |grep tomcat</span><br><span class="line"></span><br><span class="line">如：</span><br><span class="line">ps -ef|grep java|grep -v grep 显示出所有的java进程，去除掉当前的grep进程。</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在使用Linux命令时，如果命令中有管道“|”，则输出的信息中，头（标题）信息丢失，要想看每一列代表什么意思很不方便。</p>
+<p>这里有一个简单的办法，通过2条命令叠加，获取头和内容。例如ps auxw：</p>
+<p> ps axuw | head -1;ps axuw | grep java</p>
+</blockquote>
+<h2 id="netstat"><a href="#netstat" class="headerlink" title="netstat"></a>netstat</h2><p>netstat命令用来打印Linux中网络系统的状态信息，可让你得知整个Linux系统的网络情况。</p>
+<p>语法：</p>
+<blockquote>
+<p>netstat [options]</p>
+</blockquote>
+<p>选项：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">-a或--all：显示所有连线中的Socket；</span><br><span class="line">-A&lt;网络类型&gt;或--&lt;网络类型&gt;：列出该网络类型连线中的相关地址；</span><br><span class="line">-c或--continuous：持续列出网络状态；</span><br><span class="line">-C或--cache：显示路由器配置的快取信息；</span><br><span class="line">-e或--extend：显示网络其他相关信息；</span><br><span class="line">-F或--fib：显示FIB；</span><br><span class="line">-g或--groups：显示多重广播功能群组组员名单；</span><br><span class="line">-h或--help：在线帮助；</span><br><span class="line">-i或--interfaces：显示网络界面信息表单；</span><br><span class="line">-l或--listening：显示监控中的服务器的Socket；</span><br><span class="line">-M或--masquerade：显示伪装的网络连线；</span><br><span class="line">-n或--numeric：直接使用ip地址，而不通过域名服务器；</span><br><span class="line">-N或--netlink或--symbolic：显示网络硬件外围设备的符号连接名称；</span><br><span class="line">-o或--timers：显示计时器；</span><br><span class="line">-p或--programs：显示正在使用Socket的程序识别码和程序名称；</span><br><span class="line">-r或--route：显示Routing Table；</span><br><span class="line">-s或--statistice：显示网络工作信息统计表；</span><br><span class="line">-t或--tcp：显示TCP传输协议的连线状况；</span><br><span class="line">-u或--udp：显示UDP传输协议的连线状况；</span><br><span class="line">-v或--verbose：显示指令执行过程；</span><br><span class="line">-V或--version：显示版本信息；</span><br><span class="line">-w或--raw：显示RAW传输协议的连线状况；</span><br><span class="line">-x或--unix：此参数的效果和指定&quot;-A unix&quot;参数相同；</span><br><span class="line">--ip或--inet：此参数的效果和指定&quot;-A inet&quot;参数相同。</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">常用。</span><br><span class="line"></span><br><span class="line">netstat -anp | grep [port]</span><br><span class="line"></span><br><span class="line">netstat -tunlp | grep [port]</span><br><span class="line"></span><br><span class="line"># 参数说明</span><br><span class="line"> -t (tcp) 仅显示tcp相关选项</span><br><span class="line"> -u (udp)仅显示udp相关选项</span><br><span class="line"> -n 拒绝显示别名，能显示数字的全部转化为数字</span><br><span class="line"> -l 仅列出在Listen(监听)的服务状态</span><br><span class="line"> -p 显示建立相关链接的程序名</span><br></pre></td></tr></table></figure>
+<h2 id="记录其他一些常用的命令"><a href="#记录其他一些常用的命令" class="headerlink" title="记录其他一些常用的命令"></a>记录其他一些常用的命令</h2><p>结束响应进程<br>kill -9 <pid></pid></p>
+<blockquote>
+<p>kill -9 30123</p>
+</blockquote>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>解压</p>
+<blockquote>
+<p>tar -zxvf mongodb-osx-ssl-x86_64-4.0.2.tgz</p>
+</blockquote>
+<p>pwd 查看当前位置</p>
+<blockquote>
+<p>pwd</p>
+</blockquote>
+<p>修改权限</p>
+<blockquote>
+<p>chmod 777 -R data</p>
+</blockquote>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><p>连接 curl</p>
+<blockquote>
+<p>curl -v 127.0.0.1</p>
+</blockquote>
+<h3 id="refer"><a href="#refer" class="headerlink" title="refer"></a>refer</h3><ul>
+<li><a href="http://man.linuxde.net/lsof" target="_blank" rel="noopener">http://man.linuxde.net/lsof</a></li>
+<li><a href="http://man.linuxde.net/netstat" target="_blank" rel="noopener">http://man.linuxde.net/netstat</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/28/typescript - 接口/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xfh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fh的记事本">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/28/typescript - 接口/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-28T04:46:02+08:00">
+                2019-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="typescript-接口"><a href="#typescript-接口" class="headerlink" title="typescript - 接口"></a>typescript - 接口</h1><h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><ol>
+<li>TypeScript的核心原则之一是对值所具有的结构进行类型检查。</li>
+<li>在TypeScript里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。</li>
+</ol>
+<h3 id="简单例子解释"><a href="#简单例子解释" class="headerlink" title="简单例子解释"></a>简单例子解释</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">interface LabelledValue &#123;</span><br><span class="line">  label: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function printLabel(labelledObj: LabelledValue) &#123;</span><br><span class="line">  console.log(labelledObj.label);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let myObj = &#123;size: 10, label: &quot;Size 10 Object&quot;&#125;;</span><br><span class="line">printLabel(myObj);</span><br></pre></td></tr></table></figure>
+<ol>
+<li>类型检查器会查看printLabel的调用。 printLabel有一个参数，并要求这个对象参数有一个名为label类型为string的属性。 </li>
+<li>编译器只会检查那些必需的属性是否存在，并且其类型是否匹配。</li>
+<li>LabelledValue接口就好比一个名字，用来描述上面例子里的要求。 它代表了有一个 label属性且类型为string的对象。</li>
+</ol>
+<blockquote>
+<ul>
+<li>需要注意的是，我们在这里并不能像在其它语言里一样，说传给 printLabel的对象实现了这个接口。</li>
+<li>我们只会去关注值的外形。 只要传入的对象满足上面提到的必要条件，那么它就是被允许的。（类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型也是对的就可以）</li>
+</ul>
+</blockquote>
+<h4 id="可选属性、只读属性"><a href="#可选属性、只读属性" class="headerlink" title="可选属性、只读属性"></a>可选属性、只读属性</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">interface LabelledValue &#123;</span><br><span class="line">  label?: string;</span><br><span class="line">  readonly x: number;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可选属性：</p>
+<ul>
+<li>接口里的属性不全都是必需的。 有些是只在某些条件下存在，或者根本不存在。</li>
+<li>可选属性名字定义的后面加一个?符号</li>
+</ul>
+<p>只读属性：</p>
+<ul>
+<li>一些对象属性只能在对象刚刚创建的时候修改其值</li>
+<li>你可以在属性名前用 readonly来指定只读属性</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let p1: Point = &#123; x: 10, y: 20 &#125;;</span><br><span class="line">p1.x = 5; // error!</span><br></pre></td></tr></table></figure>
+<p>TypeScript具有ReadonlyArray<t>类型，它与Array<t>相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改：</t></t></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let a: number[] = [1, 2, 3, 4];</span><br><span class="line">let ro: ReadonlyArray&lt;number&gt; = a;</span><br><span class="line">ro[0] = 12; // error!</span><br><span class="line">ro.push(5); // error!</span><br><span class="line">ro.length = 100; // error!</span><br><span class="line">a = ro; // error!</span><br></pre></td></tr></table></figure>
+<p>上面代码的最后一行，可以看到就算把整个ReadonlyArray赋值到一个普通数组也是不可以的。 但是你可以用类型断言重写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = ro as number[];</span><br></pre></td></tr></table></figure>
+<h3 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h3><p>接口能够描述JavaScript中对象拥有的各种各样的外形。 除了描述带有属性的普通对象外，接口也可以描述函数类型。</p>
+<p>为了使用接口表示函数类型，我们需要给接口定义一个调用签名。 它就像是一个只有参数列表和返回值类型的函数定义。参数列表里的每个参数都需要名字和类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">interface SearchFunc &#123;</span><br><span class="line">  (source: string, subString: string): boolean;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let mySearch: SearchFunc;</span><br><span class="line">mySearch = function(src: string, sub: string) &#123;</span><br><span class="line">  let result = src.search(sub);</span><br><span class="line">  return result &gt; -1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">或</span><br><span class="line"></span><br><span class="line">mySearch = function(src, sub) &#123;</span><br><span class="line">  let result = src.search(sub);</span><br><span class="line">  return result &gt; -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>函数的参数会逐个进行检查，要求对应位置上的参数类型是兼容的</li>
+<li>如果你不想指定类型，TypeScript的类型系统会推断出参数类型，因为函数直接赋值给了 SearchFunc类型变量。</li>
+<li>函数的返回值类型是通过其返回值推断出来的（此例是 false和true）。 如果让这个函数返回数字或字符串，类型检查器会警告我们函数的返回值类型与 SearchFunc接口中的定义不匹配。</li>
+</ul>
+<h3 id="索引签名（可索引的类型）"><a href="#索引签名（可索引的类型）" class="headerlink" title="索引签名（可索引的类型）"></a>索引签名（可索引的类型）</h3><p>与使用接口描述函数类型差不多，我们也可以描述那些能够“通过索引得到”的类型，比如a[10]或ageMap[“daniel”]。 可索引类型具有一个 索引签名，它描述了对象索引的类型，还有相应的索引返回值类型。 让我们看一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">interface StringArray &#123;</span><br><span class="line">  [index: number]: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let myArray: StringArray;</span><br><span class="line">myArray = [&quot;Bob&quot;, &quot;Fred&quot;];</span><br><span class="line"></span><br><span class="line">let myStr: string = myArray[0];</span><br></pre></td></tr></table></figure>
+<p>上面例子里，我们定义了StringArray接口，它具有索引签名。 这个索引签名表示了当用 number去索引StringArray时会得到string类型的返回值。</p>
+<blockquote>
+<p>TypeScript支持两种索引签名：字符串和数字。 可以同时使用两种类型的索引，但是数字索引的返回值必须是字符串索引返回值类型的子类型。 这是因为当使用 number来索引时，JavaScript会将它转换成string然后再去索引对象。 也就是说用 100（一个number）去索引等同于使用”100”（一个string）去索引，因此两者需要保持一致。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Animal &#123;</span><br><span class="line">    name: string;</span><br><span class="line">&#125;</span><br><span class="line">class Dog extends Animal &#123;</span><br><span class="line">    breed: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 错误：使用数值型的字符串索引，有时会得到完全不同的Animal!</span><br><span class="line">interface NotOkay &#123;</span><br><span class="line">    [x: number]: Animal;</span><br><span class="line">    [x: string]: Dog;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>字符串索引签名能够很好的描述dictionary模式，并且它们也会确保所有属性与其返回值类型相匹配。 因为字符串索引声明了 obj.property和obj[“property”]两种形式都可以。 下面的例子里， name的类型与字符串索引类型不匹配，所以类型检查器给出一个错误提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">interface NumberDictionary &#123;</span><br><span class="line">  [index: string]: number;</span><br><span class="line">  length: number;    // 可以，length是number类型</span><br><span class="line">  name: string       // 错误，`name`的类型与索引类型返回值的类型不匹配</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，你可以将索引签名设置为只读，这样就防止了给索引赋值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">interface ReadonlyStringArray &#123;</span><br><span class="line">    readonly [index: number]: string;</span><br><span class="line">&#125;</span><br><span class="line">let myArray: ReadonlyStringArray = [&quot;Alice&quot;, &quot;Bob&quot;];</span><br><span class="line">myArray[2] = &quot;Mallory&quot;; // error!</span><br></pre></td></tr></table></figure>
+<p>你不能设置myArray[2]，因为索引签名是只读的。</p>
+<h3 id="类类型"><a href="#类类型" class="headerlink" title="类类型"></a>类类型</h3><h4 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h4><p>与C#或Java里接口的基本作用一样，TypeScript也能够用它来明确的强制一个类去符合某种契约。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">interface ClockInterface &#123;</span><br><span class="line">    currentTime: Date;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Clock implements ClockInterface &#123;</span><br><span class="line">    currentTime: Date;</span><br><span class="line">    constructor(h: number, m: number) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你也可以在接口中描述一个方法，在类里实现它，如同下面的setTime方法一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">interface ClockInterface &#123;</span><br><span class="line">    currentTime: Date;</span><br><span class="line">    setTime(d: Date);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Clock implements ClockInterface &#123;</span><br><span class="line">    currentTime: Date;</span><br><span class="line">    setTime(d: Date) &#123;</span><br><span class="line">        this.currentTime = d;</span><br><span class="line">    &#125;</span><br><span class="line">    constructor(h: number, m: number) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接口描述了类的公共部分，而不是公共和私有两部分。 它不会帮你检查类是否具有某些私有成员。</p>
+<h4 id="类静态部分与实例部分的区别"><a href="#类静态部分与实例部分的区别" class="headerlink" title="类静态部分与实例部分的区别"></a>类静态部分与实例部分的区别</h4><p>当你操作类和接口的时候，你要知道类是具有两个类型的：==静态部分的类型和实例的类型==。 你会注意到，当你用构造器签名去定义一个接口并试图定义一个类去实现这个接口时会得到一个错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">interface ClockConstructor &#123;</span><br><span class="line">    new (hour: number, minute: number);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Clock implements ClockConstructor &#123;</span><br><span class="line">    currentTime: Date;</span><br><span class="line">    constructor(h: number, m: number) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里因为当一个类实现了一个接口时，只对其实例部分进行类型检查。</p>
+<blockquote>
+<p>constructor存在于类的静态部分，所以不在检查的范围内。</p>
+</blockquote>
+<h3 id="继承接口"><a href="#继承接口" class="headerlink" title="继承接口"></a>继承接口</h3><p>和类一样，接口也可以相互继承。 这让我们能够从一个接口里复制成员到另一个接口里，可以更灵活地将接口分割到可重用的模块里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">interface Shape &#123;</span><br><span class="line">    color: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface PenStroke &#123;</span><br><span class="line">    penWidth: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Square extends Shape, PenStroke &#123;</span><br><span class="line">    sideLength: number;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let square = &lt;Square&gt;&#123;&#125;;</span><br><span class="line">square.color = &quot;blue&quot;;</span><br><span class="line">square.sideLength = 10;</span><br><span class="line">square.penWidth = 5.0;</span><br></pre></td></tr></table></figure>
+<h3 id="混合类型"><a href="#混合类型" class="headerlink" title="混合类型"></a>混合类型</h3><p>先前我们提过，接口能够描述JavaScript里丰富的类型。 因为JavaScript其动态灵活的特点，有时你会希望一个对象可以同时具有上面提到的多种类型。</p>
+<p>一个例子就是，一个对象可以同时做为函数和对象使用，并带有额外的属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">interface Counter &#123;</span><br><span class="line">    (start: number): string;</span><br><span class="line">    interval: number;</span><br><span class="line">    reset(): void;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function getCounter(): Counter &#123;</span><br><span class="line">    let counter = &lt;Counter&gt;function (start: number) &#123; &#125;;</span><br><span class="line">    counter.interval = 123;</span><br><span class="line">    counter.reset = function () &#123; &#125;;</span><br><span class="line">    return counter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let c = getCounter();</span><br><span class="line">c(10);</span><br><span class="line">c.reset();</span><br><span class="line">c.interval = 5.0;</span><br></pre></td></tr></table></figure>
+<h3 id="接口继承类"><a href="#接口继承类" class="headerlink" title="接口继承类"></a>接口继承类</h3><p>当接口继承了一个类类型时，它会继承类的成员但不包括其实现。 就好像接口声明了所有类中存在的成员，但并没有提供具体实现一样。 接口同样会继承到类的private和protected成员。 这意味着当你创建了一个接口继承了一个拥有私有或受保护的成员的类时，这个接口类型只能被这个类或其子类所实现（implement）。</p>
+<p>当你有一个庞大的继承结构时这很有用，但要指出的是你的代码只在子类拥有特定属性时起作用。 这个子类除了继承至基类外与基类没有任何关系。 例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class Control &#123;</span><br><span class="line">    private state: any;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface SelectableControl extends Control &#123;</span><br><span class="line">    select(): void;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Button extends Control implements SelectableControl &#123;</span><br><span class="line">    select() &#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class TextBox extends Control &#123;</span><br><span class="line">    select() &#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 错误：“Image”类型缺少“state”属性。</span><br><span class="line">class Image implements SelectableControl &#123;</span><br><span class="line">    select() &#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Location &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子里，SelectableControl包含了Control的所有成员，包括私有成员state。 因为 state是私有成员，所以只能够是Control的子类们才能实现SelectableControl接口。 因为只有 Control的子类才能够拥有一个声明于Control的私有成员state，这对私有成员的兼容性是必需的。</p>
+<p>在Control类内部，是允许通过SelectableControl的实例来访问私有成员state的。 实际上， SelectableControl接口和拥有select方法的Control类是一样的。 Button和TextBox类是SelectableControl的子类（因为它们都继承自Control并有select方法），但Image和Location类并不是这样的。</p>
+<p>refer: </p>
+<ul>
+<li><a href="https://www.tslang.cn/docs/handbook/interfaces.html" target="_blank" rel="noopener">https://www.tslang.cn/docs/handbook/interfaces.html</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/17/关于事件循环、task/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1766,440 +2139,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/15/关于闭包/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xfh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="fh的记事本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/15/关于闭包/" itemprop="url">关于闭包</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-15T22:24:56+08:00">
-                2018-03-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="关于闭包"><a href="#关于闭包" class="headerlink" title="关于闭包"></a>关于闭包</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>简单来说，闭包是指有权访问另一个函数作用域中的变量的函数</p>
-<hr>
-<p>举个例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function outer () &#123;</span><br><span class="line">	var a = 1;</span><br><span class="line"></span><br><span class="line">	function inner () &#123;</span><br><span class="line">		console.log(a);</span><br><span class="line">	&#125;</span><br><span class="line">	inner();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">outer();	//	1</span><br></pre></td></tr></table></figure>
-<p>inner执行时，可以访问到outer中的变量a，所以就形成了闭包。</p>
-<hr>
-<p>然而，在实践角度来说，满足以下条件的情况才算闭包：</p>
-<p>a. 即使创建它的上下文（执行环境）已经销毁，该函数却仍然存在（比如，内部函数从父函数中返回</p>
-<p>b. 引用了外部作用域的变量</p>
-<h2 id="了解几个概念"><a href="#了解几个概念" class="headerlink" title="了解几个概念"></a>了解几个概念</h2><h3 id="执行环境"><a href="#执行环境" class="headerlink" title="执行环境"></a>执行环境</h3><p>执行环境定义了变量或函数有权访问的其他数据。</p>
-<p>环境栈可以暂时理解为一个数组(JS引擎的一个储存栈)。</p>
-<hr>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>首先，我们看刚才的例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var scope = &quot;global scope&quot;;</span><br><span class="line">function checkscope () &#123;</span><br><span class="line">	var scope = &quot;local scope&quot;;</span><br><span class="line">	function f () &#123;</span><br><span class="line">		return scope;</span><br><span class="line">	&#125;</span><br><span class="line">	return f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var foo = checkscope();</span><br><span class="line">foo();</span><br></pre></td></tr></table></figure>
-<h4 id="简单来说"><a href="#简单来说" class="headerlink" title="简单来说"></a>简单来说</h4><ol>
-<li><p>内函数 f 被引用，而它是能够访问到外部作用域（checkscope中）的变量的</p>
-</li>
-<li><p>所以就算checkscope执行完了，它里面的scope变量也还没有被销毁，此时就成为了只有 f 函数能调用的变量（私有变量）</p>
-</li>
-<li><p>同时由于被引用着，私有变量无法释放，也就占用了内存。（传说中的内存泄漏问题）</p>
-</li>
-</ol>
-<h4 id="深入点说"><a href="#深入点说" class="headerlink" title="深入点说"></a>深入点说</h4><p>分析一下这段代码中执行上下文栈和执行上下文的变化情况。</p>
-<p>这里给出简要的执行过程：</p>
-<ol>
-<li>进入全局代码，创建全局执行上下文，全局执行上下文压入执行上下文栈</li>
-<li>全局执行上下文初始化</li>
-<li>执行checkscope函数，创建checkscope函数执行上下文，checkscope执行上下文被压入执行上下文栈</li>
-<li>checkscope执行上下文初始化，创建变量对象、作用域链、this等</li>
-<li>checkscope函数执行完毕，checkscope执行上下文从执行上下文栈中弹出</li>
-<li>执行f函数，创建f函数执行上下文，f执行上下文被压入执行上下文栈</li>
-<li>f执行上下文初始化，创建变量对象、作用域链、this等</li>
-<li>f函数执行完毕，f函数上下文从执行上下文栈中弹出</li>
-</ol>
-<hr>
-<p>当了解了这个过程，我们思考一个问题：</p>
-<p>当f函数执行的时候，checkscope函数上下文已经被销毁了（即从执行上下文栈中被弹出），为什么还能读到checkscope作用域下的scope值呢？</p>
-<ol>
-<li>当我们了解了具体的执行过程后，我们知道f执行上下文维护了一个作用域链：</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fContext = &#123;</span><br><span class="line">	Scope: [AO, checkscopeContext.AO, globalContext.VO],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ps: VO(变量对象)，AO(活动对象)</p>
-<p>2.即使checkscopeContext被销毁了，但是js依然会让checkscopeContext.AO活在内存中。</p>
-<p><strong>这里即f函数的[[scope]]保存了作用域链</strong></p>
-<p>3.而就因为这个作用域链，f函数依然可以通过作用域链，读取到checkscopeContext.AO的值。</p>
-<p>因为JavaScript做到了这点，从而实现了闭包这个概念。</p>
-<hr>
-<p>所以，让我们再看一遍实践角度上闭包的定义：</p>
-<ol>
-<li>即使创建它的上下文已经销毁，它依然存在（比如，内部函数从父函数中返回）</li>
-<li>在代码中引用了自由变量</li>
-</ol>
-<p>补充一个《JavaScript权威指南》英文原版对闭包的定义：</p>
-<blockquote>
-<p>This combination of a function object and a scope (a set of variable bindings) in which the function’s variables are resolved is called a closure in the computer science literature.</p>
-</blockquote>
-<p>闭包在计算机科学中也只是一个普通的概念，大家不要想的太复杂。。</p>
-<p>refer:</p>
-<ol>
-<li><p><a href="https://juejin.im/post/590159d8a22b9d0065c2d918" target="_blank" rel="noopener">JavaCcript之深入理解闭包</a></p>
-</li>
-<li><p><a href="https://github.com/mqyqingfeng/Blog/issues/8" target="_blank" rel="noopener">JavaScript深入之执行上下文</a></p>
-</li>
-<li><p><a href="https://github.com/kuitos/kuitos.github.io/issues/18" target="_blank" rel="noopener">一道js面试题引发的思考</a></p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/15/fetch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xfh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="fh的记事本">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/15/fetch/" itemprop="url">fetch</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-15T22:24:56+08:00">
-                2018-01-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="fetch-API"><a href="#fetch-API" class="headerlink" title="fetch API"></a>fetch API</h1><p>以往我们想要实现ajax请求，不论用的是哪种框架，基本上的实现是 <strong>XMLHTTPRequest（XHR）</strong> 。但是在以后，或许可以开始转向使用 <strong>fetch</strong> 了。</p>
-<h2 id="对比XHR"><a href="#对比XHR" class="headerlink" title="对比XHR"></a>对比XHR</h2><p>XMLHttpRequest 是一个设计粗糙的 API，不符合关注分离（Separation of Concerns）的原则，配置和调用方式非常混乱，而且基于事件的异步模型写起来也没有现代的 Promise，generator/yield，async/await 友好。</p>
-<p>Fetch 的出现就是为了解决 XHR 的问题，拿例子说明：</p>
-<p>使用 XHR 发送一个 json 请求一般是这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var xhr = new XMLHttpRequest();</span><br><span class="line">xhr.open(&apos;GET&apos;, url);</span><br><span class="line">xhr.responseType = &apos;json&apos;;</span><br><span class="line"></span><br><span class="line">xhr.onload = function() &#123;</span><br><span class="line">  console.log(xhr.response);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">xhr.onerror = function() &#123;</span><br><span class="line">  console.log(&quot;Oops, error&quot;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">xhr.send();</span><br></pre></td></tr></table></figure>
-<p>如果用上promise，会简洁一点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">fetch(url)</span><br><span class="line">.then(function(res) &#123;</span><br><span class="line">  return res.json();</span><br><span class="line">&#125;)</span><br><span class="line">.then(function(data) &#123;</span><br><span class="line">  console.log(data);</span><br><span class="line">&#125;)</span><br><span class="line">.catch(function(e) &#123;</span><br><span class="line">  console.log(&quot;Oops, error&quot;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>当然如果能使用上 async/await 就会更简洁了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line"></span><br><span class="line">try &#123;</span><br><span class="line">  let response = await fetch(url);</span><br><span class="line">  let data = await response.json();</span><br><span class="line">  console.log(data);</span><br><span class="line">&#125; catch(e) &#123;</span><br><span class="line">  console.log(&quot;Oops, error&quot;, e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>fetch(url [,options])</p>
-<p><strong>url</strong>: [string] 请求地址</p>
-<p><strong>options</strong>：[Object] 请求的配置，可包含请求头和Request对象的配置</p>
-<h3 id="请求头-Request-Headers"><a href="#请求头-Request-Headers" class="headerlink" title="请求头(Request Headers)"></a>请求头(Request Headers)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 创建一个空的 Headers 对象,注意是Headers，不是Header</span><br><span class="line">var headers = new Headers();</span><br><span class="line"></span><br><span class="line">// 添加(append)请求头信息</span><br><span class="line">headers.append(&apos;Content-Type&apos;, &apos;text/plain&apos;);</span><br><span class="line">headers.append(&apos;X-My-Custom-Header&apos;, &apos;CustomValue&apos;);</span><br><span class="line"></span><br><span class="line">// 判断(has), 获取(get), 以及修改(set)请求头的值</span><br><span class="line">headers.has(&apos;Content-Type&apos;); // true</span><br><span class="line">headers.get(&apos;Content-Type&apos;); // &quot;text/plain&quot;</span><br><span class="line">headers.set(&apos;Content-Type&apos;, &apos;application/json&apos;);</span><br><span class="line"></span><br><span class="line">// 删除某条请求头信息(a header)</span><br><span class="line">headers.delete(&apos;X-My-Custom-Header&apos;);</span><br><span class="line"></span><br><span class="line">// 创建对象时设置初始化信息</span><br><span class="line">var headers = new Headers(&#123;</span><br><span class="line">    &apos;Content-Type&apos;: &apos;text/plain&apos;,</span><br><span class="line">    &apos;X-My-Custom-Header&apos;: &apos;CustomValue&apos;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="Request对象"><a href="#Request对象" class="headerlink" title="Request对象"></a>Request对象</h3><p>Request 对象表示一次 fetch 调用的请求信息</p>
-<p>示例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var request = new Request(&apos;/users.json&apos;, &#123;</span><br><span class="line">    method: &apos;POST&apos;, </span><br><span class="line">    mode: &apos;cors&apos;, </span><br><span class="line">    redirect: &apos;follow&apos;,</span><br><span class="line">    headers: new Headers(&#123;</span><br><span class="line">        &apos;Content-Type&apos;: &apos;text/plain&apos;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// 使用!</span><br><span class="line">fetch(request).then(function() &#123; /* handle response */ &#125;);</span><br></pre></td></tr></table></figure>
-<p>配置对象说明：</p>
-<table>
-<thead>
-<tr>
-<th>key</th>
-<th>value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>method</td>
-<td>GET, POST, PUT, DELETE, HEAD等</td>
-</tr>
-<tr>
-<td>url</td>
-<td>请求的url</td>
-</tr>
-<tr>
-<td>headers</td>
-<td>对应的 Headers 对象</td>
-</tr>
-<tr>
-<td>referrer</td>
-<td>请求的 referrer 信息</td>
-</tr>
-<tr>
-<td>mode</td>
-<td>cors(允许跨域请求)，same-origin(同源请求)，no-cors(禁止同源，只能使用get、post、head)</td>
-</tr>
-<tr>
-<td>credentials</td>
-<td>设置 cookies 是否随请求一起发送。可以设置: omit（从不发送cookie）, same-origin(同源时发送cookie), include(总是发送cookie)</td>
-</tr>
-<tr>
-<td>redirect</td>
-<td>如何处理重定向模式. follow, error, manual</td>
-</tr>
-<tr>
-<td>integrity</td>
-<td>请求内容的 subresource integrity 值</td>
-</tr>
-<tr>
-<td>cache</td>
-<td>设置 cache 模式 (default, reload, no-cache)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="Response-对象"><a href="#Response-对象" class="headerlink" title="Response 对象"></a>Response 对象</h3><p>(…属性部分未完，待整理)</p>
-<p>提供的方法：</p>
-<table>
-<thead>
-<tr>
-<th>function</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Response.clone()</td>
-<td>创建一个Response对象的克隆</td>
-</tr>
-<tr>
-<td>Response.error()</td>
-<td>返回一个绑定了网络错误的新的Response对象</td>
-</tr>
-<tr>
-<td>Response.redirect()</td>
-<td>用另一个URL创建一个新的 response.</td>
-</tr>
-<tr>
-<td>Response实现(implements)了Body,所以以下方法同样可用:</td>
-<td>——</td>
-</tr>
-<tr>
-<td>Body.arrayBuffer()</td>
-<td>读取 Response对象并且将它设置为已读（因为Responses对象被设置为了 流【stream】 的方式，所以它们只能被读取一次）,并返回一个被解析为ArrayBuffer格式的promise对象</td>
-</tr>
-<tr>
-<td>Body.blob()</td>
-<td>….Blob格式….</td>
-</tr>
-<tr>
-<td>Body.formData()</td>
-<td>….FormData格式….</td>
-</tr>
-<tr>
-<td>Body.json()</td>
-<td>….JSON格式….(大概是用的最多的方法）</td>
-</tr>
-<tr>
-<td>Body.text()</td>
-<td>….USVString格式….</td>
-</tr>
-</tbody>
-</table>
-<p>(implements,个人理解应该是类似class的类继承，所以子类可以调用父类的定义在类上面的方法【不是定义在父类的原型,参考es6的class部分</p>
-<p>(stream 流。在node上面有提出，目前个人是理解为原始的二进制数据，即没有MINE类型，因此需要在Reponse对象中调用json()等函数进行格式转换</p>
-<h2 id="浏览器的原生支持率"><a href="#浏览器的原生支持率" class="headerlink" title="浏览器的原生支持率"></a>浏览器的原生支持率</h2><p>不过注意一下，低版本的浏览器是需要polyfill的（当然也不建议低版本的浏览器用啦。。</p>
-<p><img src="https://mdn.mozillademos.org/files/15083/fetch-api.png" alt="https://mdn.mozillademos.org/files/15083/fetch-api.png"></p>
-<p>原生支持率并不高，幸运的是，引入下面这些 polyfill 后可以完美支持 IE8+ ：</p>
-<ol>
-<li>由于 IE8 是 ES3，需要引入 ES5 的 polyfill: <a href="https://github.com/es-shims/es5-shim" target="_blank" rel="noopener">es5-shim, es5-sham</a></li>
-<li>引入 Promise 的 polyfill: <a href="https://github.com/jakearchibald/es6-promise" target="_blank" rel="noopener">es6-promise</a></li>
-<li>引入 fetch 探测库：<a href="https://github.com/camsong/fetch-detector" target="_blank" rel="noopener">fetch-detector</a></li>
-<li>引入 fetch 的 polyfill: <a href="https://github.com/camsong/fetch-ie8" target="_blank" rel="noopener">fetch-ie8</a></li>
-</ol>
-<h2 id="自己瞎写的一段"><a href="#自己瞎写的一段" class="headerlink" title="自己瞎写的一段"></a>自己瞎写的一段</h2><p>如题，参考了别人的demo，自己瞎写的一段。需要polyfill的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">export default async (url = &apos;&apos;, method = &apos;get&apos;, data = &#123;&#125;) =&gt; &#123;</span><br><span class="line">    console.log(method + &quot;:&quot; + url)</span><br><span class="line">    // 拼装基本路径</span><br><span class="line">    url = baseUrl + url</span><br><span class="line"></span><br><span class="line">    // get方法,query拼接</span><br><span class="line">    if (method == &apos;get&apos;) &#123;</span><br><span class="line">        let dataStr = &apos;&apos;</span><br><span class="line">        Object.keys(data).forEach(key =&gt; &#123;</span><br><span class="line">            dataStr += key + &apos;=&apos; + encodeURIComponent(data[key]) + &apos;&amp;&apos;;</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">        if (dataStr) &#123;</span><br><span class="line">            dataStr = dataStr.substr(0, dataStr.lastIndexOf(&apos;&amp;&apos;))</span><br><span class="line">            url = url + &apos;?&apos; + dataStr</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 检查是否有fetch方法</span><br><span class="line">    // https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch</span><br><span class="line">    if (window.fetch) &#123;</span><br><span class="line">        console.log(&apos;fetch is working&apos;)</span><br><span class="line">        let requestConfig = &#123;</span><br><span class="line">            // 带上cookie </span><br><span class="line">            credentials: &apos;include&apos;,</span><br><span class="line"></span><br><span class="line">            method: method,</span><br><span class="line">            headers: &#123;</span><br><span class="line">                &apos;Accept&apos;: &apos;application/json&apos;,</span><br><span class="line">                &apos;Content-Type&apos;: &apos;application/json&apos;</span><br><span class="line">            &#125;,</span><br><span class="line">            mode: &apos;cors&apos;</span><br><span class="line">            // cache: &apos;force-cache&apos;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (method == &apos;post&apos;) &#123;</span><br><span class="line">            requestConfig.body = JSON.stringify(data)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // fetch 接口（有polyfill）</span><br><span class="line">        // https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API</span><br><span class="line">        try &#123;</span><br><span class="line">            const response = await fetch(url, requestConfig)</span><br><span class="line">            console.log(response)</span><br><span class="line">            let responseJson = await response.json();</span><br><span class="line"></span><br><span class="line">            if (!responseJson.errors) &#123;</span><br><span class="line">                return Promise.resolve(responseJson);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                return Promise.reject(responseJson.errors[0] || responseJson.errors)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (e) &#123;</span><br><span class="line">            throw new Error(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return new Promise( (resolve, reject) =&gt; &#123;</span><br><span class="line">            let requestObj;</span><br><span class="line">            // 新版浏览器</span><br><span class="line">            if (window.XMLHttpRequest) &#123;</span><br><span class="line">                requestObj = new XMLHttpRequest()</span><br><span class="line">            &#125;</span><br><span class="line">            // ie </span><br><span class="line">            else &#123;</span><br><span class="line">                requestObj = new ActiveXObject();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            /* </span><br><span class="line">             *   method：请求的类型；GET 或 POST</span><br><span class="line">             *   url：文件在服务器上的位置</span><br><span class="line">             *   async：true（异步）或 false（同步）</span><br><span class="line">            */</span><br><span class="line">            requestObj.open(method, url, true)</span><br><span class="line">            requestObj.setRequestHeader(&apos;Content-Type&apos;, &apos;application/x-www-form-urlencoded&apos;)</span><br><span class="line"></span><br><span class="line">            requestObj.onreadystatechange = () =&gt; &#123;</span><br><span class="line">                if (requestObj.readystate == 4) &#123;</span><br><span class="line">                    if (requestObj.status == 200) &#123;</span><br><span class="line">                        let obj = requestObj.response</span><br><span class="line">                        if (typeof obj !== &apos;object&apos;) &#123;</span><br><span class="line">                            obj = JSON.parse(obj)</span><br><span class="line">                        &#125;</span><br><span class="line">                        resolve(obj)</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        reject(requestObj)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // return axios[method](uri, data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>参考：</p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API#%E6%A6%82%E5%BF%B5%E5%92%8C%E7%94%A8%E6%B3%95" target="_blank" rel="noopener">Fetch API</a></p>
-<p><a href="http://blog.csdn.net/renfufei/article/details/51494396" target="_blank" rel="noopener">fetch</a></p>
-<p><a href="https://github.com/camsong/blog/issues/2" target="_blank" rel="noopener">传统 Ajax 已死，Fetch 永生</a></p>
-<p><a href="http://blog.csdn.net/renfufei/article/details/51494396" target="_blank" rel="noopener">fetch 简介</a></p>
-<p>对于跨域：<a href="http://blog.csdn.net/gdp12315_gu/article/details/66479524" target="_blank" rel="noopener">http://blog.csdn.net/gdp12315_gu/article/details/66479524</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2250,7 +2189,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2300,7 +2239,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
